@@ -1,0 +1,32 @@
+{
+  "system": "Project Aegis - Academic Backend",
+  "roles": {
+    "student": {
+      "permissions": ["read_grades", "submit_assignment", "view_courses"],
+      "inherits_from": []
+    },
+    "lecturer": {
+      "permissions": ["edit_grades", "create_assignment", "manage_students"],
+      "inherits_from": ["student"]
+    },
+    "admin": {
+      "permissions": ["all"],
+      "inherits_from": ["lecturer"]
+    },
+    "guest_lecturer": {
+      "permissions": ["view_courses", "edit_grades"],
+      "inherits_from": []
+    }
+  },
+  "endpoints": {
+    "/api/grades/update": {
+      "allowed_roles": ["lecturer", "admin"]
+    },
+    "/api/users/delete": {
+      "allowed_roles": ["admin"]
+    },
+     "/api/courses/view": {
+      "allowed_roles": ["student", "lecturer", "guest_lecturer", "admin"]
+    }
+  }
+}

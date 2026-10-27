@@ -1,0 +1,69 @@
+{
+  "system": "Project Aegis - Academic Backend (Secured RBAC)",
+  "roles": {
+    "student": {
+      "description": "Mahasiswa aktif yang mengikuti perkuliahan",
+      "permissions": [
+        "courses:view:enrolled",
+        "assignments:submit:self",
+        "grades:read:self"
+      ],
+      "inherits_from": []
+    },
+    "guest_lecturer": {
+      "description": "Dosen tamu dengan akses terbatas pada materi perkuliahan",
+      "permissions": [
+        "courses:view:assigned",
+        "materials:upload:assigned_course"
+      ],
+      "inherits_from": []
+    },
+    "lecturer": {
+      "description": "Dosen pengampu mata kuliah tetap",
+      "permissions": [
+        "courses:view:assigned",
+        "assignments:create:assigned_course",
+        "grades:read:assigned_course",
+        "grades:update:assigned_course",
+        "students:view_roster:assigned_course"
+      ],
+      "inherits_from": ["guest_lecturer"]
+    },
+    "admin": {
+      "description": "Administrator sistem untuk manajemen pengguna dan konfigurasi katalog",
+      "permissions": [
+        "users:create",
+        "users:read",
+        "users:update",
+        "users:deactivate",
+        "courses:manage_catalog",
+        "audit_logs:read"
+      ],
+      "inherits_from": []
+    }
+  },
+  "endpoints": {
+    "/api/grades/update": {
+      "method": "PATCH",
+      "required_permissions": ["grades:update:assigned_course"],
+      "enforce_ownership_check": true,
+      "ownership_rule": "user.id == course.assigned_lecturer_id"
+    },
+    "/api/users/delete": {
+      "method": "DELETE",
+      "required_permissions": ["users:deactivate"],
+      "enforce_ownership_check": false,
+      "audit_logged": true
+    },
+    "/api/courses/view": {
+      "method": "GET",
+      "required_permissions": [
+        "courses:view:enrolled",
+        "courses:view:assigned",
+        "courses:manage_catalog"
+      ],
+      "enforce_ownership_check": true,
+      "ownership_rule": "Berdasarkan relasi user terhadap mata kuliah (enrolled/assigned)"
+    }
+  }
+}
